@@ -1,5 +1,5 @@
-build : main.cpp node.cpp node.h
-	g++ main.cpp node.cpp bsearch.cpp -o a.out
+build : main.cpp node.cpp
+	g++ main.cpp node.cpp -o a.out
 
 run : build
 	./a.out

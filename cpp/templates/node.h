@@ -14,22 +14,23 @@ public:
     Value getValue();
 };
 
-template <typename Value> Node<Value>::Node(int __key, Value __value)
+template <typename Value>
+Node<Value>::Node(int __key, Value __value)
 {
     key = __key;
     value = __value;
 }
 
-template <typename Value> int Node<Value>::getKey()
+template <typename Value>
+int Node<Value>::getKey()
 {
     return key;
 }
 
-template <typename Value> Value Node<Value>::getValue()
+template <typename Value>
+Value Node<Value>::getValue()
 {
     return value;
 }
-
-template class Node<int>;
 
 #endif

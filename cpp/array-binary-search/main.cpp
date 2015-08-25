@@ -9,7 +9,7 @@ void test(Node **array, int key)
 {
     printf("searching for key %d\n", key);
 
-    Node *found = BinarySearch(array, ARRAY_SIZE, key);
+    Node *found = BinarySearch<Node*>(array, ARRAY_SIZE, key);
 
     if (found != NULL) {
         printf("found (%d, %d)\n\n", found->getKey(), found->getValue());
