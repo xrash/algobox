@@ -6,33 +6,60 @@
 #include <math.h>
 
 template <typename Key, typename Value>
-struct HeapNode {
+class HeapNode {
+public:
     Key key;
     Value value;
+    HeapNode(Key key, Value value);
 };
 
-template <typename Node>
+template <typename Key, typename Value>
+    HeapNode<Key,Value>::HeapNode(Key __key, Value __value)
+{
+    key = __key;
+    value = __value;
+}
+
+template <typename Key, typename Value>
 class Heap
 {
 private:
-    Node *array;
+    HeapNode<Key,Value> **array;
     int heapSize;
+    int arraySize;
+    void growInternalArray();
 public:
     Heap(int initialArraySize);
-    Node pop();
-    void insert(Node node);
+    HeapNode<Key,Value>* pop();
+    void insert(Key key, Value value);
     void dump();
 };
 
-template <typename Node>
-Heap<Node>::Heap(int initialArraySize)
+template <typename Key, typename Value>
+    void Heap<Key,Value>::growInternalArray()
 {
-    array = (Node*) malloc(sizeof(Node) * initialArraySize + 1);
-    heapSize = 0;
+    int newArraySize = arraySize * 2;
+    HeapNode<Key,Value> **newArray = (HeapNode<Key,Value>**) malloc(sizeof(HeapNode<Key,Value>*) * newArraySize + 1);
+
+    for (int i = 0; i < arraySize; i++) {
+        newArray[i] = array[i];
+    }
+
+    free(array);
+    array = newArray;
+    arraySize = newArraySize;
 }
 
-template <typename Node>
-Node Heap<Node>::pop()
+template <typename Key, typename Value>
+    Heap<Key,Value>::Heap(int initialArraySize)
+{
+    array = (HeapNode<Key,Value>**) malloc(sizeof(HeapNode<Key,Value>*) * initialArraySize + 1);
+    heapSize = 0;
+    arraySize = initialArraySize;
+}
+
+template <typename Key, typename Value>
+    HeapNode<Key,Value>* Heap<Key,Value>::pop()
 {
     // If the heap is empty, do not return anything.
     if (heapSize == 0) {
@@ -40,7 +67,7 @@ Node Heap<Node>::pop()
     }
 
     // Copy the last value in the heap to the root.
-    Node root = array[1];
+    HeapNode<Key,Value>* root = array[1];
     array[1] = array[heapSize];
     array[heapSize] = NULL;
 
@@ -54,21 +81,21 @@ Node Heap<Node>::pop()
 
     // Shift down the root node until it satisfies the heap property.
     unsigned int current, leftChild, rightChild, minChild;
-    int currentKey, leftChildKey, rightChildKey, minChildKey;
-    Node tmp;
+    Key currentKey, leftChildKey, rightChildKey, minChildKey;
+    HeapNode<Key,Value>* tmp;
 
     current = 1;
     leftChild = 2;
     rightChild = 3;
 
-    currentKey = array[current]->getKey();
-    leftChildKey = array[leftChild]->getKey();
+    currentKey = array[current]->key;
+    leftChildKey = array[leftChild]->key;
 
     if (rightChild > heapSize) {
         minChildKey = leftChildKey;
         minChild = leftChild;
     } else {
-        rightChildKey = array[rightChild]->getKey();
+        rightChildKey = array[rightChild]->key;
 
         if (rightChildKey < leftChildKey) {
             minChildKey = rightChildKey;
@@ -88,13 +115,13 @@ Node Heap<Node>::pop()
         leftChild = 2 * current;
         rightChild = leftChild + 1;
 
-        currentKey = array[current]->getKey();
+        currentKey = array[current]->key;
 
         if (leftChild > heapSize) {
             break;
         }
 
-        leftChildKey = array[leftChildKey]->getKey();
+        leftChildKey = array[leftChild]->key;
 
         if (rightChild > heapSize) {
             minChildKey = leftChildKey;
@@ -102,7 +129,7 @@ Node Heap<Node>::pop()
             break;
         }
 
-        rightChildKey = array[rightChildKey]->getKey();
+        rightChildKey = array[rightChild]->key;
 
         if (rightChildKey < leftChildKey) {
             minChildKey = rightChildKey;
@@ -116,23 +143,32 @@ Node Heap<Node>::pop()
     return root;
 }
 
-template <typename Node>
-void Heap<Node>::insert(Node node)
+template <typename Key, typename Value>
+    void Heap<Key,Value>::insert(Key key, Value value)
 {
+    // Add a new element to the end of the array.
+    HeapNode<Key,Value>* node = new HeapNode<Key,Value>(key, value);
     array[heapSize+1] = node;
 
     int current = heapSize+1;
     int parent = floor(current/2);
 
+    // Advance the heap size counter.
     heapSize++;
 
+    // Grow the internal array if needed.
+    if ((heapSize+2) >= arraySize) {
+        growInternalArray();
+    }
+
+    // Shift the new element up until the heap property is satisfied.
     if (parent < 1) {
         return;
     }
 
-    Node tmp;
+    HeapNode<Key,Value>* tmp;
 
-    while (array[current]->getKey() < array[parent]->getKey()) {
+    while (array[current]->key < array[parent]->key) {
         tmp = array[current];
         array[current] = array[parent];
         array[parent] = tmp;
@@ -142,13 +178,13 @@ void Heap<Node>::insert(Node node)
     }
 }
 
-template <typename Node>
-void Heap<Node>::dump()
+template <typename Key, typename Value>
+    void Heap<Key,Value>::dump()
 {
     printf("heap size: %d\n", heapSize);
 
     for (int i = 1; i < (heapSize+1); i++) {
-        printf("%d => %d\n", i, array[i]->getKey());
+        printf("%d => %d\n", i, array[i]->key);
     }
 
     printf("\n");
