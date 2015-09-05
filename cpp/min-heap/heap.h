@@ -36,21 +36,6 @@ public:
 };
 
 template <typename Key, typename Value>
-    void Heap<Key,Value>::growInternalArray()
-{
-    int newArraySize = arraySize * 2;
-    HeapNode<Key,Value> **newArray = (HeapNode<Key,Value>**) malloc(sizeof(HeapNode<Key,Value>*) * newArraySize + 1);
-
-    for (int i = 0; i < arraySize; i++) {
-        newArray[i] = array[i];
-    }
-
-    free(array);
-    array = newArray;
-    arraySize = newArraySize;
-}
-
-template <typename Key, typename Value>
     Heap<Key,Value>::Heap(int initialArraySize)
 {
     array = (HeapNode<Key,Value>**) malloc(sizeof(HeapNode<Key,Value>*) * initialArraySize + 1);
@@ -188,6 +173,21 @@ template <typename Key, typename Value>
     }
 
     printf("\n");
+}
+
+template <typename Key, typename Value>
+    void Heap<Key,Value>::growInternalArray()
+{
+    int newArraySize = arraySize * 2;
+    HeapNode<Key,Value> **newArray = (HeapNode<Key,Value>**) malloc(sizeof(HeapNode<Key,Value>*) * newArraySize + 1);
+
+    for (int i = 0; i < arraySize; i++) {
+        newArray[i] = array[i];
+    }
+
+    free(array);
+    array = newArray;
+    arraySize = newArraySize;
 }
 
 #endif
